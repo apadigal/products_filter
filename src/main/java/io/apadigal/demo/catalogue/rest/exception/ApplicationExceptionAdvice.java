@@ -11,26 +11,45 @@ package io.apadigal.demo.catalogue.rest.exception;
 
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 
 @RestControllerAdvice
 public class ApplicationExceptionAdvice {
 
+    @ExceptionHandler(value = {NoHandlerFoundException.class})
+    public ResponseEntity<ApiErrorMessage> handleNoHandlerFoundException(NoHandlerFoundException ex) {
+        ApiErrorMessage responseMsg = ApiErrorMessage.builder()
+                .status(HttpStatus.NOT_FOUND)
+                .message("Requested resource not found")
+                .path(ex.getRequestURL())
+                .build();
+        return new ResponseEntity<>(responseMsg, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(value = {HttpClientErrorException.class})
-    public ResponseMessage handleNotFoundException(HttpServletResponse response) {
-        response.setStatus(HttpStatus.NOT_FOUND.value());
-        ResponseMessage responseMsg = new ResponseMessage("Not Found");
-        return responseMsg;
+    public ResponseEntity<ApiErrorMessage> handleCategoryNotFoundException() {
+        ApiErrorMessage responseMsg = ApiErrorMessage.builder()
+                .status(HttpStatus.NOT_FOUND)
+                .message("Category Not Found")
+                .build();
+        return new ResponseEntity<>(responseMsg, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {ConversionFailedException.class})
-    public ResponseMessage handleBadDataException(HttpServletResponse response) {
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        ResponseMessage responseMsg = new ResponseMessage("Bad Request parameters");
-        return responseMsg;
+    public ResponseEntity<ApiErrorMessage> handleBadDataException(ConversionFailedException ex, HttpServletResponse response) {
+        ApiErrorMessage responseMsg = ApiErrorMessage.builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .message("Invalid request data")
+                .errors(Arrays.asList("Source Type :" + ex.getSourceType(), "But Target Type:" + ex.getTargetType(), "Value :" + ex.getValue()))
+                .build();
+        return new ResponseEntity<>(responseMsg, HttpStatus.BAD_REQUEST);
     }
+
 }

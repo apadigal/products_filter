@@ -7,8 +7,10 @@ This is spring project to list products based on category
     * [IDE Setup](#ide-setup)
   * [Commands](#commands)
     * [Build Project](#build-project)
-    * [Run the Application](#run-the-application)
     * [Run Integration Tests](#run-tests)
+    * [Run the Application](#run-the-application)
+  * [Test Application](#test-application)
+    * [REST Client test](#testing-application-with-rest-client)
 
 ## Requirements
 * Java 1.8
@@ -46,4 +48,5 @@ http://localhost:8080/v1/categories/600001506?labelType=ShowWasThenNow
 http://localhost:8080/v1/categories/WRONGCODE
 http://localhost:8080/v1/categories/600001506?labelType=unknown
 ```
+
 
